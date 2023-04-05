@@ -50,3 +50,16 @@ def simetry(pixels):
     hor = np.array(list(map(horizontal_simetry, pixels)))
     
     return ver + hor
+
+def vertical_simetry2(pixels):
+  '''
+    pixels -> Is all the dataset
+  '''
+  p = pixels.reshape(-1, 28, 28)
+
+  A = p[:, :, :14]
+  B = p[:, :, 14:]
+
+  B_ = np.flip(B, 2)
+
+  return np.sum(np.abs(A - B_), axis=1) / 255
