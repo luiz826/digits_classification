@@ -1,1 +1,3 @@
 MAX_TON = 255.0
+
+N_PIXELS = 28
