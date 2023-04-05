@@ -15,27 +15,27 @@ def vertical_simetry(pixels):
     '''
       pixels -> Is all the dataset
     '''
-    p = pixels.reshape(-1, 28, 28)
+    p = pixels.reshape(-1, N_PIXELS, N_PIXELS)
 
-    A = p[:, :, :14]
-    B = p[:, :, 14:]
+    A = p[:, :, :N_PIXELS//2]
+    B = p[:, :, N_PIXELS//2:]
 
     B_ = np.flip(B, 2)
 
-    return np.sum(np.abs(A - B_), axis=1) / 255
+    return np.sum(np.abs(A - B_), axis=1) / MAX_TON
 
 def horizontal_simetry(pixels):
     '''
     pixels -> Is all the dataset
     '''
-    p = pixels.reshape(-1, 28, 28)
+    p = pixels.reshape(-1, N_PIXELS, N_PIXELS)
 
-    A = p[:, :14, :]
-    B = p[:, 14:, :]
+    A = p[:, :N_PIXELS//2, :]
+    B = p[:, N_PIXELS//2:, :]
 
     B_ = np.flip(B, 1)
 
-    return np.sum(np.abs(A - B_), axis=1) / 255
+    return np.sum(np.abs(A - B_), axis=1) / MAX_TON
 
 def simetry(pixels):
     ver = vertical_simetry, pixels)
