@@ -10,3 +10,4 @@ Os notebooks estão definidos como:
 
 - Pre processamento: Aplica a redução de dimensionalidade através da simetria e intensidade dos pixels e salva os datasets
 - Classificação dos digitos 1x5: Classifica se o dígito é 1 ou 5
+

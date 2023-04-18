@@ -42,10 +42,3 @@ def simetry(pixels: np.array) -> np.array:
     hor = horizontal_simetry(pixels)
     
     return ver + hor
-
-
-def filter_0_x_5(df: pd.DataFrame) -> pd.DataFrame:
-    filter_0 = df.loc[:, "label"] == 0
-    filter_5 = df.loc[:, "label"] == 5
-    
-    return df[(filter_0) | (filter_5)]
