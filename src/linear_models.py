@@ -1,5 +1,7 @@
 import numpy as np
+import pandas as pd
 from numpy import linalg as LA
+from .classifier_all_utils import *
 import random
 
 class LinearRegression:
@@ -15,6 +17,9 @@ class LinearRegression:
     
     def get_w(self):
         return self.w
+    
+    def set_w(self, w):
+        self.w = w
 
 class LogisticRegression:
     def __init__(self, eta=0.1, tmax=1000, bs=1000000, lam = 0):
@@ -69,19 +74,13 @@ class LogisticRegression:
 
     def get_w(self):
         return self.w
-
-    def getRegressionY(self, regressionX, shift=0):
-        return (-self.w[0]+shift - self.w[1]*regressionX) / self.w[2]
+    
+    def set_w(self, w):
+        self.w = w
 
 class PocketPLA():
     def __init__(self, tmax = 1000) -> None:
         self.tmax = tmax
-        
-    def get_w(self):
-        return self.w
-    
-    def set_w(self, w):
-        self.w = w
 
     def constroiListaPCI(self, X: np.array, y: np.array, w: np.array) -> tuple:
         yPred = np.sign(X.dot(w))
@@ -117,19 +116,56 @@ class PocketPLA():
                 best_w = self.w
 
         self.w = best_w
-
-                    
-    def getOriginalY(self, originalX):
-        return (-self.w[0] - self.w[1]*originalX) / self.w[2]
     
     def predict(self, X):
         return np.sign(X.dot(self.w))
     
-    def errorIN(self, X, y):
-        error = 0
-        for i in range(len(y)):
-            if(np.sign(np.dot(self.w, X[i])) != y[i]):
-                error += 1
+    def get_w(self):
+        return self.w
+    
+    def set_w(self, w):
+        self.w = w
+
+class OneVsAll:
+    def __init__(self, model: str, **kwargs) -> None:
+        if model == "lin":
+            self.model = LinearRegression()
+        elif model == "log":
+            self.model = LogisticRegression(eta=kwargs["eta"], 
+                                               bs=kwargs["bs"], 
+                                               tmax=kwargs["tmax"]
+                                              )                                               
+        else:
+            self.model = PocketPLA(tmax=kwargs["tmax"])                                      
+    
+    def fit(self, train: pd.DataFrame) -> None:
+        weigths = []
+        for i in [0, 1, 4]:
+            train["tmp_label"] = train["label"].map(lambda x: 1 if x == i else -1)
+
+            X_train = train[["intensidade", "simetria"]].values
+            y_train = train["tmp_label"].values
+            X_train = np.c_[np.ones(X_train.shape[0]), X_train]
+
+            self.model.fit(X_train, y_train)
+
+            weigths.append(self.model.get_w())
+
+            train = remove_class(train, i)
+        
+        self.weigths = weigths
+    
+    def predict(self, X_test: np.array) -> np.array:
+        pred = np.zeros(len(X_test)) - 1
+        
+        for i, m in enumerate([0, 1, 4]):
+            self.model.set_w(self.weigths[i])
+            p = np.array(self.model.predict(X_test))
+            if m == 4:
+                pred[np.argwhere(p == 1)] = m        
+                pred[np.argwhere(pred == -1)] = 5
+            else:
+                pred[np.argwhere(p == 1)] = m
                 
-        return error
+        return pred
    
