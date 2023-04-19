@@ -11,10 +11,10 @@ def filter_1x5(df: pd.DataFrame, or_ = True) -> pd.DataFrame:
     
     return df[filter_1], df[filter_5]
 
-def plot1x5(df: pd.DataFrame, wei = None) -> None:
+def plot1x5(df: pd.DataFrame, wei = []) -> None:
     filter_1, filter_5 = filter_1x5(df, False)
     
-    if wei != None:
+    if len(wei) != 0:
         x1 = np.array([20, 150]) # Valores arbitrários de x1 para desenhar a linha
         x2 = -(wei[0] + wei[1]*x1) / wei[2]
         plt.plot(x1, x2)
