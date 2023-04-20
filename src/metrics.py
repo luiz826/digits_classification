@@ -108,7 +108,7 @@ def classification_report_all(y_true, y_pred, real_class, print_mc = True, class
     mc = confusion_matrix_all(y_true, y_pred, real_class, class_1, class_2)
     
     if print_mc:
-        print("Matriz de Confusão: ", mc)
+        print("Matriz de Confusão: \n", mc)
 
     sup_c1 = 0
     sup_c2 = 0
