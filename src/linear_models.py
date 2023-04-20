@@ -168,4 +168,7 @@ class OneVsAll:
                 pred[np.argwhere(p == 1)] = m
                 
         return pred
-   
+    
+    def get_w(self) -> list:
+        return self.weigths
+    
