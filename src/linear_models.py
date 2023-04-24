@@ -157,27 +157,19 @@ class OneVsAll:
         
         self.weigths = weigths
     
-    def predict(self, test: pd.DataFrame) -> np.array:
+    def predict_one(self, img: np.array) -> np.array:
+       
+        for i, m in enumerate(self.order[:-1]):
+            self.model.set_w(self.weigths[i]) 
+            p_ = np.array(self.model.predict([img]))
+            print(m)
+            if p_ == 1:
+                return m
+            else:
+                if m == self.order[-2]:
+                    return self.order[-1]
+
         
-        X_test = test[["intensidade", "simetria"]].values
-        X_test = np.c_[np.ones(X_test.shape[0]), X_test]  
-        
-        pred = np.zeros(len(X_test)) - 1
-        
-        test_ = {}
-        p_total = []
-        
-        
-        for p in X_test:
-            for i, m in enumerate(self.order[:-1]):
-                self.model.set_w(self.weigths[i]) 
-                print(p)
-                p_ = np.array(self.model.predict([p]))
-                print(p_)
-                if p_ == self.order[-2]:
-                    
-                else:
-                    p_total.append(m)
                 
 #         for i, m in enumerate(self.order[:-1]):
 #             self.model.set_w(self.weigths[i])    
