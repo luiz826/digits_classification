@@ -127,7 +127,9 @@ class PocketPLA():
         self.w = w
 
 class OneVsAll:
-    def __init__(self, model: str, **kwargs) -> None:
+    def __init__(self, model: str, order=[1, 0, 4, 5], **kwargs) -> None:
+        self.order = order
+        
         if model == "lin":
             self.model = LinearRegression()
         elif model == "log":
@@ -136,11 +138,11 @@ class OneVsAll:
                                                tmax=kwargs["tmax"]
                                               )                                               
         else:
-            self.model = PocketPLA(tmax=kwargs["tmax"])                                      
+            self.model = PocketPLA(tmax=kwargs["tmax"])      
     
     def fit(self, train: pd.DataFrame) -> None:
         weigths = []
-        for i in [0, 1, 4]:
+        for i in self.order[:-1]:
             train["tmp_label"] = train["label"].map(lambda x: 1 if x == i else -1)
 
             X_train = train[["intensidade", "simetria"]].values
@@ -155,19 +157,67 @@ class OneVsAll:
         
         self.weigths = weigths
     
-    def predict(self, X_test: np.array) -> np.array:
+    def predict(self, test: pd.DataFrame) -> np.array:
+        
+        X_test = test[["intensidade", "simetria"]].values
+        X_test = np.c_[np.ones(X_test.shape[0]), X_test]  
+        
         pred = np.zeros(len(X_test)) - 1
         
-        for i, m in enumerate([0, 1, 4]):
-            self.model.set_w(self.weigths[i])
-            p = np.array(self.model.predict(X_test))
-            if m == 4:
-                pred[np.argwhere(p == 1)] = m        
-                pred[np.argwhere(pred == -1)] = 5
-            else:
-                pred[np.argwhere(p == 1)] = m
+        test_ = {}
+        p_total = []
+        
+        
+        for p in X_test:
+            for i, m in enumerate(self.order[:-1]):
+                self.model.set_w(self.weigths[i]) 
+                print(p)
+                p_ = np.array(self.model.predict([p]))
+                print(p_)
+                if p_ == self.order[-2]:
+                    
+                else:
+                    p_total.append(m)
                 
-        return pred
+#         for i, m in enumerate(self.order[:-1]):
+#             self.model.set_w(self.weigths[i])    
+            
+#             X_test = test[["intensidade", "simetria"]].values
+#             X_test = np.c_[np.ones(X_test.shape[0]), X_test] 
+#             p = np.array(self.model.predict(X_test))
+#             if m == 0:
+#                 print("-"*80)
+#                 print(any(p == 1))
+                
+            
+#             print(self.model.get_w())
+#             print(len(X_test))
+#             print(len(test))
+#             print(len(p), m)
+          
+#             if m == self.order[-2]:
+#                 p[np.argwhere(p == 1)] = m            
+#                 p[np.argwhere(p == -1)] = self.order[-1]            
+#             else:
+#                 p[np.argwhere(p == 1)] = m            
+            
+#             p_total.extend(p)
+#             test = remove_class(test, m)
+            
+                
+            
+# #           if m == self.order[-2]:
+# #                 pred[np.argwhere(p == 1)] = m        
+# #                 pred[np.argwhere(p == -1)] = 
+# # #                 test_[m] = np.argwhere(p == 1)
+# # #                 test_[self.order[-1]] = np.argwhere(pred == -1)
+# #             else:
+# #                 pred[np.argwhere(p == 1)] = m
+# #                 test_[m] = np.argwhere(p == 1)
+            
+# #             print(len(X_test[np.argwhere(p == -1)]))
+# #             X_test = X_test[np.argwhere(p == -1)]
+#         return np.array(p_total)[np.array(p_total) != -1]
     
     def get_w(self) -> list:
         return self.weigths
