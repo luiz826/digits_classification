@@ -135,7 +135,8 @@ class OneVsAll:
         elif model == "log":
             self.model = LogisticRegression(eta=kwargs["eta"], 
                                                bs=kwargs["bs"], 
-                                               tmax=kwargs["tmax"]
+                                               tmax=kwargs["tmax"],
+                                               lam=kwargs["lam"]
                                               )                                               
         else:
             self.model = PocketPLA(tmax=kwargs["tmax"])      
