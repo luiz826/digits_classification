@@ -20,11 +20,11 @@ def plot_all(df: pd.DataFrame, wei = []) -> None:
     for k,w in enumerate(wei): 
         x1 = np.array([20, 150]) 
         x2 = -(w[0] + w[1]*x1) / w[2]
-        plt.plot(x1, x2, label=f"{ORDER[k]} x {ORDER[k+1]}")
+        plt.plot(x1, x2, label=f"{ORDER[k]} x {ORDER[k+1:]}")
         
 
     for i in ORDER:
-        plt.scatter(test.loc[test["label"] == i]['intensidade'], test.loc[test["label"] == i]['simetria'], label=f"{i}")
+        plt.scatter(df.loc[test["label"] == i]['intensidade'], df.loc[test["label"] == i]['simetria'], label=f"{i}")
 
     plt.ylabel("Simetria")
     plt.xlabel("Intensidade")
