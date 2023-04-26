@@ -108,7 +108,7 @@ def classification_report(cm):
 
     # imprimir as métricas de avaliação
     return pd.DataFrame({
-        "accuracy": np.sum(accuracy),
+        "accuracy": round(np.sum(accuracy), 2),
         "precision": precision,
         "recall": recall,
         "f1-score": f1_score
