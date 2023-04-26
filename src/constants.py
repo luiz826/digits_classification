@@ -1,3 +1,5 @@
 MAX_TON = 255.0
 
 N_PIXELS = 28
+
+ORDER = [1, 0, 4, 5]

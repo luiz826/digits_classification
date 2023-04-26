@@ -2,35 +2,34 @@ import numpy as np
 import pandas as pd
 from numpy import linalg as LA
 from .classifier_all_utils import *
+from .constants import ORDER
 import random
 
 class LinearRegression:
-    def fit(self, _X, _y):
+    def fit(self, _X, _y) -> None:
         X =  np.array(_X)
         y =  np.array(_y)
         xTx = np.dot(X.transpose(), X)
         inverse = np.linalg.inv(xTx)
         self.w = np.dot(np.dot( inverse, X.transpose()), y)
     
-    def predict(self, _x):
+    def predict(self, _x)  -> list:
         return [np.sign(np.dot(self.w, xn)) for xn in _x]
     
-    def get_w(self):
+    def get_w(self) -> list:
         return self.w
     
-    def set_w(self, w):
+    def set_w(self, w) -> None:
         self.w = w
 
 class LogisticRegression:
-    def __init__(self, eta=0.1, tmax=1000, bs=1000000, lam = 0):
+    def __init__(self, eta=0.1, tmax=1000, bs=1000000, lam = 0) -> None:
         self.eta = eta
         self.tmax = tmax
         self.batch_size = bs
         self.lam = lam
 
-    # Infere o vetor w da funçao hipotese
-    #Executa a minimizao do erro de entropia cruzada pelo algoritmo gradiente de descida
-    def fit(self, _X, _y):
+    def fit(self, _X, _y) -> None:
         X = np.array(_X)
         y = np.array(_y).reshape(-1, 1)
 
@@ -61,21 +60,18 @@ class LogisticRegression:
 
         self.w = w
     
-        
-    #funcao hipotese inferida pela regressa logistica  
-    def predict_prob(self, X):
+    def predict_prob(self, X) -> list:
         return [(1/(1+ np.exp(-(self.w.dot(x))))) for x in X]
 
-    #Predicao por classificação linear
-    def predict(self, X):
+    def predict(self, X) -> list:
         pred = self.predict_prob(X)
         
         return [1 if i >= 0.5 else -1 for i in pred]
 
-    def get_w(self):
+    def get_w(self) -> np.array:
         return self.w
     
-    def set_w(self, w):
+    def set_w(self, w) -> None:
         self.w = w
 
 class PocketPLA():
@@ -84,12 +80,11 @@ class PocketPLA():
 
     def constroiListaPCI(self, X: np.array, y: np.array, w: np.array) -> tuple:
         yPred = np.sign(X.dot(w))
-
         mask = (y != yPred)
 
         return X[mask], y[mask]
 
-    def fit(self, _X, y):
+    def fit(self, _X, y) -> None:
         X = np.array(_X)
         y = np.array(y)
         self.w = np.zeros(_X.shape[1])
@@ -117,17 +112,17 @@ class PocketPLA():
 
         self.w = best_w
     
-    def predict(self, X):
+    def predict(self, X) -> np.array:
         return np.sign(X.dot(self.w))
     
-    def get_w(self):
+    def get_w(self) -> np.array:
         return self.w
     
-    def set_w(self, w):
+    def set_w(self, w) -> None:
         self.w = w
 
 class OneVsAll:
-    def __init__(self, model: str, order=[1, 0, 4, 5], **kwargs) -> None:
+    def __init__(self, model: str, order=ORDER, **kwargs) -> None:
         self.order = order
         
         if model == "lin":

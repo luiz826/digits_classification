@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from .constants import ORDER
 
 def filter_all(df: pd.DataFrame, class_: int, or_ = True) -> pd.DataFrame:
     filter_c_1 = df.loc[:, "label"] == class_
@@ -15,20 +16,19 @@ def remove_class(df: pd.DataFrame, class_: int) -> pd.DataFrame:
     return df[df.loc[:, "label"] != class_]
     
     
-def plot1x5(df: pd.DataFrame, wei = []) -> None:
-    filter_1, filter_5 = filter_1x5(df, False)
-    
-    if len(wei) != 0:
-        x1 = np.array([20, 150]) # Valores arbitrários de x1 para desenhar a linha
-        x2 = -(wei[0] + wei[1]*x1) / wei[2]
-        plt.plot(x1, x2)
+def plot_all(df: pd.DataFrame, wei = []) -> None:
+    for k,w in enumerate(wei): 
+        x1 = np.array([20, 150]) 
+        x2 = -(w[0] + w[1]*x1) / w[2]
+        plt.plot(x1, x2, label=f"{ORDER[k]} x {ORDER[k+1]}")
+        
 
-    plt.scatter(filter_1['intensidade'], filter_1['simetria'], color="blue", label="Um")
-    plt.scatter(filter_5['intensidade'], filter_5['simetria'], color="red", label="Cinco")
+    for i in ORDER:
+        plt.scatter(test.loc[test["label"] == i]['intensidade'], test.loc[test["label"] == i]['simetria'], label=f"{i}")
+
     plt.ylabel("Simetria")
     plt.xlabel("Intensidade")
     plt.title("Intensidade x Simetria")
+    plt.ylim(50, 200)
     plt.legend()
     plt.show()
-
-    
