@@ -3,6 +3,7 @@ import pandas as pd
 from numpy import linalg as LA
 from .classifier_all_utils import *
 from .constants import ORDER
+from tqdm import tqdm
 import random
 
 class LinearRegression:
@@ -39,16 +40,16 @@ class LogisticRegression:
         w = np.zeros(d)
         eps = self.eta
 
-        for _ in range(self.tmax):
+        for _ in tqdm(range(self.tmax), desc = "logistic regression"):
             if self.batch_size < N:
                 ids = random.sample(range(N),self.batch_size)
-                batchX = [X[index] for index in ids]
-                batchY = [y[index] for index in ids]
+                batchX = np.array(X[ids])
+                batchY = np.array(y[ids])
             else:
                 batchX = X
                 batchY = y
 
-            gt = -(1/N) * sum([xi*yi / (1+np.exp(yi*w.dot(xi))) for xi, yi in zip(batchX, batchY)])
+            gt = -(1/N) * np.sum( batchX*batchY / (1+np.exp(batchY* w.dot(batchX.T).reshape(-1,1))), axis=0)
             
             if self.lam != 0:
                 gt += 2*self.lam * w
@@ -56,7 +57,8 @@ class LogisticRegression:
             if LA.norm(gt) < eps:
                 break
                 
-            w -= self.eta*gt
+            w -= self.eta*gt                     
+                             
 
         self.w = w
     
@@ -95,7 +97,7 @@ class PocketPLA():
         best_w = self.w
         best_error = len(y)
 
-        for _ in range(self.tmax):  
+        for _ in tqdm(range(self.tmax), desc = "pocket pla"):  
             if len(XPCI) == 0:
                 break
 
